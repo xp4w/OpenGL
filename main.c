@@ -5,7 +5,18 @@
 
 #include "defines.h"
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+/* Whenever the window size is changed this callback function executes */
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+	glViewport(0, 0, width, height);
+}
+/* Process all input */
+void processInput(GLFWwindow* window)
+{
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+		glfwSetWindowShouldClose(window, 1);
+	}
+}
 
 int main()
 {
@@ -33,16 +44,16 @@ int main()
 
 	/* Render loop */
 	while (!glfwWindowShouldClose(window)) {
+		processInput(window);
+
+		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		/* Check and call events and swap buffers */
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
 
 	glfwTerminate();
 	return 0;
-}
-
-/* Whenever the window size is changed this callback function executes */
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
-{
-	glViewport(0, 0, width, height);
 }
