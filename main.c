@@ -2,6 +2,7 @@
 #include <GLFW\glfw3.h>
 
 #include <stdio.h>
+#include <math.h>
 
 #include "defines.h"
 #include "shaders.h"
@@ -89,36 +90,26 @@ int main()
 	/* Vertex data */
 	float vertices[] = {
 		/* X      Y     Z */
-		 0.5f,  0.5f, 0.0f, /* Top right    */
 		 0.5f, -0.5f, 0.0f, /* Bottom right */
 		-0.5f, -0.5f, 0.0f, /* Bottom left  */
-		-0.5f,  0.5f, 0.0f, /* Top left     */
-	};
-	unsigned int indices[] = {
-		0, 1, 3, /* First triangle  */
-		1, 2, 3, /* Second triangle */
+		 0.0f,  0.5f, 0.0f, /* Top          */
 	};
 
-	unsigned int VBO, VAO, EBO;
+	unsigned int VBO, VAO;
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
 
 	glBindVertexArray(VAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
 	glBindVertexArray(0);
 
+	/* Uncomment for wireframe */
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	/* Render loop */
@@ -129,10 +120,17 @@ int main()
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		/* Draw square ;) */
 		glUseProgram(shaderProgram);
+
+		/* Update color */
+		double time = glfwGetTime();
+		float sinValue = sin(time) / 2.0f + 0.5f;
+		int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
+		glUniform4f(vertexColorLocation, 0.0f, sinValue, 0.0f, 1.0f);
+
+		/* Draw triangle :O */
 		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
 
 		/* Check and call events and swap buffers */
 		glfwSwapBuffers(window);
